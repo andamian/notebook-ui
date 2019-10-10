@@ -23,8 +23,8 @@ script:
         - for i in $(ls -d */); do
             cd $i;
             py.test || exit 1;
-            if [[$i == 'SuperNova/']]; then
-            jupyter nbconvert SuperNova.ipynb --stdout --to python --PythonExporter.exclude_markdown=True| flake8 - --max-line-length 120 --ignore=F841,W391 || exit -1; 
+            if [["$i" == "SuperNova/"]]; then
+                jupyter nbconvert SuperNova.ipynb --stdout --to python --PythonExporter.exclude_markdown=True| flake8 - --max-line-length 120 --ignore=F841,W391 || exit -1; 
             fi;
             cd ..;
             done
