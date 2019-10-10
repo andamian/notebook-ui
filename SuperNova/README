@@ -1,0 +1,4 @@
+Convert the ipynb file to python script before lint:
+
+$ jupyter nbconvert SuperNova.ipynb --stdout --to python --PythonExporter.exclude_markdown=True|flake8 - --max-line-length 120 --ignore=F841,W391
+

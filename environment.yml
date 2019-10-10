@@ -1,0 +1,18 @@
+channels:
+    - conda-forge    
+
+dependencies:              
+    - appmode
+    - pandas
+    - numpy
+    - IPython
+    - astropy
+    - python
+    - pip
+    - pip:
+            - cadcutils
+            - cadctap
+            - git+https://github.com/glue-viz/glue-jupyter.git
+            - ipyvuetify
+            - astroquery
+            - flake8
