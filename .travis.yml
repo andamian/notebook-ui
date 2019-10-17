@@ -1,0 +1,35 @@
+language: python
+
+python: 
+        - 3.6
+
+before_install:
+        - echo "Start Installation"
+        - sudo apt-get update
+
+
+install:
+        - wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
+        - bash miniconda.sh -b -p $HOME/miniconda
+        - export PATH="$HOME/miniconda/bin:$PATH"
+        - hash -r
+        - conda config --set always_yes yes --set changeps1 no
+        - conda update -q conda
+        - conda info -a
+        - conda env create -n test-environment python=$TRAVIS_PYTHON_VERSION -f environment.yml
+        - source activate test-environment
+
+script:
+        - for i in $(ls -d */); do
+            cd $i;
+            py.test || exit 1;
+            if [[ "$i" == "SuperNova/" ]]; then
+            jupyter nbconvert SuperNova.ipynb --stdout --to python --PythonExporter.exclude_markdown=True| flake8 - --ignore=F841,W391 || exit -1; 
+            fi;
+            cd ..;
+            done
+
+
+after_success:
+        - echo "Build success"
+ 
