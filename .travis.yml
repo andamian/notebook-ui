@@ -25,6 +25,8 @@ script:
             py.test || exit 1;
             if [[ "$i" == "SuperNova/" ]]; then
             jupyter nbconvert SuperNova.ipynb --stdout --to python --PythonExporter.exclude_markdown=True| flake8 - --ignore=F841,W391 || exit -1; 
+            elif [[ "$i" == "MegaPrimeImage/" ]]; then
+            jupyter nbconvert megaPrimeImage.ipynb --stdout --to python --PythonExporter.exclude_markdown=True| flake8 - --ignore=F841,W391 || exit -1;
             fi;
             cd ..;
             done
