@@ -15,6 +15,7 @@ dependencies:
             - cadctap
             - git+https://github.com/glue-viz/glue-jupyter.git
             - ipyvuetify
+            - ipywidgets
             - astroquery
             - drawSvg  
             - flake8
