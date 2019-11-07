@@ -1,8 +1,4 @@
-Click the binder badge to try it live without installing anything.
-
-
-
-A development environment for MegaPrimeImage can be created with Docker:
+# A development environment for MegaPrimeImage can be created with Docker:
 
 1.Install Docker
 2.Git clone this repository
