@@ -6,6 +6,6 @@
 
 Click the binder badge to try it live without installing anything.
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/LiaoWenyun/notebook-ui/master)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/opencadc/notebook-ui.git/master)
 
 Jupyter notebook UI components
