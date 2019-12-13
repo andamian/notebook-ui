@@ -1,0 +1,7 @@
+ipywidgets
+pandas
+astropy
+pyvo
+networkx
+git+https://github.com/glue-viz/glue-jupyter.git
+         
