@@ -3,24 +3,25 @@ import ipywidgets as widgets
 import pyvo
 from IPython.display import Image, display, clear_output
 import networkx as nx
+from pyvo.auth import authsession
 
 __all__ = ['QueryBuilder']
 
 class QueryBuilder:
+    #
+    #
     def __init__(self):
         self.view_query_button = widgets.Button(
             description="View Query",
             layout=widgets.Layout(width='100px'),
             style=widgets.ButtonStyle(button_color='#C8F7FD'))
         self.view_query_button.on_click(self.__display_query)
-        
         self.clear_button = widgets.Button(
             description="CLEAR",
             layout=widgets.Layout(flex='1 1 auto',
                                   width='auto'),
             style=widgets.ButtonStyle(button_color='#C8F7FD'))
         self.clear_button.on_click(self.__clear_button_clicked)
-        
         self.edit_button = widgets.Button(
             description="EDIT QUERY",
             layout=widgets.Layout(flex='1 1 auto',
@@ -37,9 +38,11 @@ class QueryBuilder:
         self.list_test = [self.clear_button, self.edit_button]
 
 
-        
-    
+    #
+    #
+    #
     def __initialize(self):
+        self.cookie = ''##
         self.list_of_join_tables = []
         self.count = 0
         self.count_num_clicks = 0
@@ -49,15 +52,24 @@ class QueryBuilder:
         self.on_condition_dictionary = {}
         self.column_type_dictionary ={}
         self.graph = nx.Graph()
-        self.query_out = widgets.Output(layout=widgets.Layout(width='100%'))
-        self.add_button_output = widgets.Output(layout=widgets.Layout(width='100%'))
-        self.where_condition_out = widgets.Output(layout=widgets.Layout(width='100%'))
+        self.query_out = widgets.Output(
+            layout=widgets.Layout(width='100%'))
+        self.add_button_output = widgets.Output(
+            layout=widgets.Layout(width='100%'))
+        self.where_condition_out = widgets.Output(
+            layout=widgets.Layout(width='100%'))
         self.query_out.layout.border = "1px solid green"
-        self.edit_out = widgets.Output(layout=widgets.Layout(width='100%'))
-        self.result = widgets.Output(layout=widgets.Layout(width='100%'))
+        self.edit_out = widgets.Output(
+            layout=widgets.Layout(width='100%'))
+        self.result = widgets.Output(
+            layout=widgets.Layout(width='100%'))
         self.out = widgets.Output()
         self.view_query_button.disabled = False
-    
+
+
+    #
+    #
+    #
     def Start_query(self):
         with self.out:
             clear_output()
@@ -67,13 +79,16 @@ class QueryBuilder:
             display(self.edit_out)
             display(self.result)
         display(self.out)
-    
-    
+
+
+    #
+    #
+    #
     def __get_service(self):
-        service_combobox_list = ['https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/tap/',
-                                 'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/youcat/',
-                                 'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/argus/']
-        
+        service_combobox_list = [
+            'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/tap/',
+            'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/youcat/',
+            'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/argus/']
         self.service_combobox = widgets.Combobox(
             value='https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/argus/',
             options=service_combobox_list,
@@ -81,23 +96,34 @@ class QueryBuilder:
             continuous_update=False,
             layout=widgets.Layout(left='-15px',
                                   width='780px'))
-         
         output_schema = widgets.interactive_output(
             self.__get_schema,
             {'service': self.service_combobox})
         display(self.service_combobox)
         display(output_schema)
 
-        
-        
+
+    #
+    #
+    #
     def __get_schema(self, service):
         try:
             self.joinable_dictionary = {}
             self.on_condition_dictionary = {}
-            self.service = pyvo.dal.TAPService(service)
+            if self.cookie != '':
+                auth = authsession.AuthSession()
+                auth.credentials.set_cookie('CADC_SSO', self.cookie)
+                self.service = pyvo.dal.TAPService(service, auth)
+                print('logged in with CADC_SSO cookie')
+            else: 
+                self.service = pyvo.dal.TAPService(service)
+                print('not logged in')
             table_query1 = "SELECT schema_name FROM tap_schema.schemas"
-            table_query2 = "SELECT schema_name, table_name FROM tap_schema.tables"
-            table_query3 = "SELECT from_table,target_table,from_column,target_column FROM tap_schema.keys JOIN tap_schema.key_columns ON tap_schema.keys.key_id=tap_schema.key_columns.key_id"
+            table_query2 = """SELECT schema_name, table_name
+            FROM tap_schema.tables"""
+            table_query3 = """SELECT from_table,target_table,from_column,
+            target_column FROM tap_schema.keys JOIN tap_schema.key_columns ON
+            tap_schema.keys.key_id=tap_schema.key_columns.key_id"""
             schemas = self.service.search(table_query1)
             tables = self.service.search(table_query2)
             joinables = self.service.search(table_query3)
@@ -146,7 +172,10 @@ class QueryBuilder:
         display(self.schema_dropdown)
         display(output_tables)
 
- 
+
+    #
+    #
+    #
     def __get_table(self, schema):    
 
         table_list = []
@@ -184,10 +213,11 @@ class QueryBuilder:
             self.__change_columns,
             {'table':self.table_one})
         display(widgets.HBox([self.table_one, self.join_button]),self.add_button_output, ouput_columns, ouput_where_columns)
-    
-    
-            
-    
+
+
+    #
+    #
+    #
     def __add_button_clicked(self, b):
         with self.add_button_output:
             clear_output()
@@ -220,9 +250,11 @@ class QueryBuilder:
                 display(x)
             
             self.view_query_button.click()  
- 
-        
-        
+
+
+    #
+    #
+    #
     def __BFS(self, graph, selected_node):
         result = []
         visited = [False] * (len(graph))
@@ -240,15 +272,18 @@ class QueryBuilder:
                     queue.append(i)
                     visited[list(graph.keys()).index(i)] = True
         return result[1:]
-        
-        
-        
+
+
+    #
+    #
+    #
     def __shortest_path(self, start, end):
         return nx.dijkstra_path(self.graph, start, end)
-    
-    
-        
 
+
+    #
+    #
+    #
     def __set_columns(self, table_text):
         self.tmp_where_condition_dictionary = {}
         self.list_of_where_object = {}   ## clear the list 
@@ -258,6 +293,9 @@ class QueryBuilder:
         display(self.where_condition_out)
 
 
+    #
+    #
+    #
     def __get_other_fields(self, column, key):
         if self.column_type_dictionary[column] == 'char':
             method_list = ['like', 'equal']
@@ -280,10 +318,18 @@ class QueryBuilder:
         self.tmp_where_condition_dictionary[key] = method_ui
         widgets.interactive_output(self.__update_on_value, {"value":self.column_value})  ###############
         display(method_ui)
-    
+
+
+    #
+    #
+    #
     def __update_on_value(self, value):   ####
         self.view_query_button.click()                ####
-            
+
+
+    #
+    #
+    #
     def __column_button_clicked(self,b):
         with self.where_condition_out:
             clear_output()
@@ -299,11 +345,10 @@ class QueryBuilder:
                     column_name = widgets.Dropdown(
                         options=columns,
                         description=description,
-                        layout=widgets.Layout(
-                                              flex='1 1 auto',
+                        layout=widgets.Layout(flex='1 1 auto',
                                               width='auto'))
-                    save_key = widgets.Text(value=str(self.count)
-                                        ,description='Key')
+                    save_key = widgets.Text(value=str(self.count),
+                                            description='Key')
                     other_fields = widgets.interactive_output(
                         self.__get_other_fields, {'column': column_name, 'key':save_key})
                     add_button = widgets.Button(description="+",
@@ -316,7 +361,8 @@ class QueryBuilder:
                                                   widgets.Box([other_fields],
                                                               layout=widgets.Layout(top="-6px",width="40%")),
                                                   widgets.Box([add_button],
-                                                              layout=widgets.Layout(width="10%"))], layout=widgets.Layout(left='-35px'))
+                                                              layout=widgets.Layout(width="10%"))],
+                                                  layout=widgets.Layout(left='-35px')) 
                     if(len(list(self.list_of_where_object.values()))>0):
                         where = list(self.list_of_where_object.values())[-1].children[0].children[0]
                         where.options = [ where.value]
@@ -335,9 +381,11 @@ class QueryBuilder:
             
             except Exception:   ### prevent column list not found error from showing 
                 pass
-                   
-            
-            
+
+
+    #
+    #
+    #
     def __change_columns(self, table):
         if len(self.list_of_join_tables) == 0:
             self.table_text.value = f"(table_name='{table}')"
@@ -352,13 +400,17 @@ class QueryBuilder:
             self.table_text.value = string
         self.view_query_button.click()  ###################
 
-            
-            
+
+    #
+    #
+    #
     def __get_where_columns(self, table_text):
         columns = self.__get_column_list(table_text)
-             
-    
-    
+
+
+    #
+    #
+    #
     def __get_select_columns(self, table_text):
         columns = self.__get_column_list(table_text)
         self.select_multiple_columns = widgets.SelectMultiple(
@@ -377,11 +429,18 @@ class QueryBuilder:
         #update the query on select_multiple chnage 
         widgets.interactive_output(self.__update_on_multiple,{'select_multiple':self.select_multiple_columns})#####
         display(widgets.HBox([self.select_multiple_columns,self.update_query_button]))
-    
+
+
+    #
+    #
+    #
     def __update_on_multiple(self,select_multiple):   ####
         self.view_query_button.click()                ####
-    
-    
+
+
+    #
+    #
+    #
     def __get_column_list(self, table_text):
         query = f"""SELECT column_name, table_name, indexed, datatype from
         tap_schema.columns WHERE """
@@ -398,9 +457,11 @@ class QueryBuilder:
                 column_lst[i] = f"{table_name[i]}.{column_lst[i]}"
             self.column_type_dictionary[column_lst[i]] = type_lst[i]
         return column_lst
-        
 
-    
+
+    #
+    #
+    #
     def __edit_button_clicked(self, b):
         with self.edit_out:
             clear_output()
@@ -414,8 +475,10 @@ class QueryBuilder:
             else:
                 self.__disable_fields(False)
 
-            
-        
+
+    #
+    #
+    #
     def __disable_fields(self, set_disable):
         self.view_query_button.disabled = set_disable
         self.service_combobox.disabled = set_disable
@@ -436,6 +499,9 @@ class QueryBuilder:
             i.children[1].disabled = set_disable
 
 
+    #
+    #
+    #
     def search_query(self):
         self.view_query_button.click()
         if self.edit_flag == True:
@@ -448,17 +514,27 @@ class QueryBuilder:
         self.edit_button.disabled = False
         self.clear_button.disabled = False
         return result
-        
 
+
+    #
+    #
+    #
     def __clear_button_clicked(self, b):
         self.out.clear_output()
         self.__initialize()
         self.Start_query()
 
+
+    #
+    #
+    #
     def __update_query_clicked(self, b):
         self.view_query_button.click()
 
-        
+
+    #
+    #
+    #
     def __display_query(self, b):
         with self.query_out:
             clear_output()
