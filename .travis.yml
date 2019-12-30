@@ -27,6 +27,8 @@ script:
             jupyter nbconvert SuperNova.ipynb --stdout --to python --PythonExporter.exclude_markdown=True| flake8 - --ignore=F841,W391 || exit -1; 
             elif [[ "$i" == "MegaPrimeImage/" ]]; then
             jupyter nbconvert megaPrimeImage.ipynb --stdout --to python --PythonExporter.exclude_markdown=True| flake8 - --ignore=F841,W391 || exit -1;
+            elif [[ "$i" == "QueryBuilder/" ]]; then
+            jupyter nbconvert run_builder.ipynb --stdout --to python --PythonExporter.exclude_markdown=True| flake8 - --ignore=F841,W391,E402 ||exit -1;
             fi;
             cd ..;
             done
