@@ -1,8 +1,12 @@
 ### Run QueryBuilder locally without Docker:
 1.Git clone this repository
+
 2.```pip install jupyter ```
+
 3.```pip install -r requirements.txt```
+
 4.Enable ipywidgets ```jupyter nbextension enable --sys-prefix --py widgetsnbextension```
+
 5.Install and enable appmode(Optional)
 ```
 pip install appmode
