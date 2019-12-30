@@ -19,3 +19,7 @@ dependencies:
             - astroquery
             - drawSvg  
             - flake8
+            - networkx
+            - pycookiecheat
+            - browser_cookie3
+            - requests
