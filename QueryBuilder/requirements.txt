@@ -1,6 +1,6 @@
 ipywidgets
 pandas
-astropy
+astropy==3.2.1
 pyvo
 networkx
 pycookiecheat
