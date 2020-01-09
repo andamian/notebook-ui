@@ -4,4 +4,8 @@
 
 [![Build Status](https://travis-ci.org/opencadc/notebook-ui.svg?branch=master)](https://travis-ci.org/opencadc/notebook-ui)
 
+Click the binder badge to try it live without installing anything.
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/opencadc/notebook-ui.git/master)
+
 Jupyter notebook UI components

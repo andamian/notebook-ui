@@ -1,0 +1,10 @@
+ipywidgets
+pandas
+astropy==3.2.1
+pyvo
+networkx
+pycookiecheat
+browser_cookie3
+requests
+git+https://github.com/glue-viz/glue-jupyter.git
+
